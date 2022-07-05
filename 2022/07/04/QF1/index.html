@@ -140,7 +140,7 @@
         
           
         
-        <p>Let’s start. I don’t want to waste time on the programming environment. All my code is run on Datayes platform or local python environment. In the future, I’ll pick a special time to introduce the programming environment and different python libraries.</p>
+        <p>Let’s start. I don’t want to waste time on the programming environment. All my code is run on <a target="_blank" rel="noopener" href="https://uqer.datayes.com/">Datayes platform</a> or local python environment. In the future, I’ll pick a special time to introduce the programming environment and different python libraries.</p>
 <p>Next, I will post my code directly and explain it in detail with comments.</p>
 <h1 id="Basic-Information-Analysis-of-Stocks"><a href="#Basic-Information-Analysis-of-Stocks" class="headerlink" title="Basic Information Analysis of Stocks"></a>Basic Information Analysis of Stocks</h1><pre><code class="python">import pandas as pd
 from pandas import Series,DataFrame
@@ -169,6 +169,54 @@ from datetime import datetime
 <p>If the image is too small to see, we can use parameter<code>figsize</code> to adjust it.</p>
 <p><code>data_600183.plot(x=&#39;tradeDate&#39;,y=&#39;turnoverVol&#39;,figsize=(12,6))</code></p>
 <p><img src="https://societyniu.obs.cn-east-3.myhuaweicloud.com/QF/1/4.png"></p>
+<h3 id="Moving-Averages"><a href="#Moving-Averages" class="headerlink" title="Moving Averages"></a>Moving Averages</h3><pre><code class="python">ma_day=[10,20,50]
+for ma in ma_day:
+    column_name = &quot;MA for %s days&quot; %(str(ma))
+    data_600183[column_name] = pd.rolling_mean(data_600183[&#39;closePrice&#39;],ma)
+data_600183.plot(x=&#39;tradeDate&#39;,y=[&#39;closePrice&#39;,&#39;MA for 10 days&#39;,&#39;MA for 20 days&#39;,&#39;MA for 50 days&#39;],figsize=(12,6))
+</code></pre>
+<p>We define an array to set the moving averages day. And then we use function <code>pd.rolling_mean</code> to calculate for every members. The data is stored in the Pandas object. </p>
+<p><img src="https://societyniu.obs.cn-east-3.myhuaweicloud.com/QF/1/5.png"></p>
+<h3 id="Daily-Percentage-Changes"><a href="#Daily-Percentage-Changes" class="headerlink" title="Daily Percentage Changes"></a>Daily Percentage Changes</h3><pre><code class="python">data_600183[&#39;Daily Return&#39;] = data_600183[&#39;closePrice&#39;].pct_change()
+data_600183.plot(x=&#39;tradeDate&#39;,y=&#39;Daily Return&#39;,linestyle=&#39;--&#39;,marker=&#39;o&#39;,figsize=(12,6))
+</code></pre>
+<p>We can use function <code>pct_change()</code> to calculate the daily change of closeprice. And the parameters ‘linestyle’ and ‘marker’ are used to make the pictures more beautiful and visual.</p>
+<p><img src="https://societyniu.obs.cn-east-3.myhuaweicloud.com/QF/1/6.png"></p>
+<h3 id="Kernel-Density-Estimation-Images-and-Average-Return-Histogram"><a href="#Kernel-Density-Estimation-Images-and-Average-Return-Histogram" class="headerlink" title="Kernel Density Estimation Images and Average Return Histogram"></a>Kernel Density Estimation Images and Average Return Histogram</h3><pre><code class="python">data_600183[&#39;Daily Return&#39;] = data_600183[&#39;closePrice&#39;].pct_change()
+sns.distplot(data_600183[&#39;Daily Return&#39;].dropna(),bins=100,color=&#39;r&#39;)
+</code></pre>
+<p>The function <code>dropna()</code> is used to delete void data. The function <code>seaborn.distplot</code> is used to generate kernel density estimation images and average return histogram. </p>
+<p><img src="https://societyniu.obs.cn-east-3.myhuaweicloud.com/QF/1/7.png"></p>
+<h1 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h1><p>We combine the modules above and make the stocks code changeable. You can also click <a target="_blank" rel="noopener" href="https://github.com/SocietyNiu/QF/blob/main/QF1.py">here</a> to download it.</p>
+<pre><code class="python">import pandas as pd
+from pandas import Series,DataFrame
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt;
+from datetime import datetime
+
+stockCode=&#39;600183&#39;
+data = DataAPI.MktEqudAdjAfGet(secID=u&quot;&quot;,ticker=stockCode,tradeDate=u&quot;&quot;,isOpen=&quot;&quot;,beginDate=u&quot;&quot;,endDate=u&quot;&quot;,field=u&quot;secID,secShortName,tradeDate,openPrice,highestPrice,lowestPrice,closePrice,turnoverVol&quot;,pandas=&quot;1&quot;)
+data[&#39;Daily Return&#39;] = data[&#39;closePrice&#39;].pct_change()
+
+sns.distplot(data[&#39;Daily Return&#39;].dropna(),color=&#39;r&#39;)
+data.info()
+data.describe()
+data.plot(x=&#39;tradeDate&#39;,y=&#39;closePrice&#39;)
+ma_day=[10,20,50]
+
+for ma in ma_day:
+    column_name = &quot;MA for %s days&quot; %(str(ma))
+    data[column_name] = pd.rolling_mean(data[&#39;closePrice&#39;],ma)
+data.plot(x=&#39;tradeDate&#39;,y=[&#39;closePrice&#39;,&#39;MA for 10 days&#39;,&#39;MA for 20 days&#39;,&#39;MA for 50 days&#39;],figsize=(12,6))
+data.plot(x=&#39;tradeDate&#39;,y=&#39;Daily Return&#39;,linestyle=&#39;--&#39;,marker=&#39;o&#39;,figsize=(12,6))
+</code></pre>
+<p>There is something you need to pay attention to.</p>
+<ul>
+<li>You can change the parameter ‘stockCode’ to get the information you want </li>
+<li>There is a bug about the graph. So I put the kernel density estimation images and average return histogram at the top</li>
+<li>All the code should be run on <a target="_blank" rel="noopener" href="https://uqer.datayes.com/">Datayes platform</a></li>
+</ul>
 
         <!-- 分类文章 -->
         
